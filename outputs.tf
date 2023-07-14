@@ -102,3 +102,15 @@ output "apigatewayv2_authorizer_id" {
   description = "The map of API Gateway Authorizer identifiers"
   value       = { for k, v in aws_apigatewayv2_authorizer.this : k => v.id }
 }
+
+output "api_gateway_stage_ids" {
+  value = [for stage in aws_apigatewayv2_stage.default : stage.id]
+}
+
+output "domain_names" {
+  value = [for domain_name in aws_apigatewayv2_domain_name.this: domain_name.domain_name]
+}
+
+output "api_ids" {
+  value = [for api_id in aws_apigatewayv2_api.this: api_id.id]
+}

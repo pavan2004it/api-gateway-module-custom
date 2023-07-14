@@ -116,28 +116,9 @@ resource "aws_apigatewayv2_stage" "default" {
   }
 }
 
-locals {
-  stage_ids = [for stage in aws_apigatewayv2_stage.default : stage.id]
-  gateway_ids = [for api in aws_apigatewayv2_api.this : api.id]
-  domains_ids = [for domain in var.domains: domain.domain_name]
-  map_combined = {
-    for i, stage_id in local.stage_ids : stage_id => {
-      gateway_id : local.gateway_ids[i],
-      domain_id  : local.domains_ids[i]
-    }
-  }
-}
 
 
-# Default API mapping
-resource "aws_apigatewayv2_api_mapping" "this" {
-#  count = var.create && var.create_api_domain_name && var.create_default_stage && var.create_default_stage_api_mapping ? 1 : 0
-  for_each = var.create && var.create_api_domain_name && var.create_default_stage && var.create_default_stage_api_mapping ? local.map_combined : {}
 
-  api_id      = each.value.gateway_id
-  domain_name = each.value.domain_id
-  stage       = each.key
-}
 
 # Routes and integrations
 resource "aws_apigatewayv2_route" "this" {
