@@ -128,7 +128,7 @@ resource "aws_apigatewayv2_api_mapping" "this" {
 
   api_id      = each.value
   domain_name = each.value
-  stage       = aws_apigatewayv2_stage.default[0].id
+  stage       = aws_apigatewayv2_stage.default[each.key].id
 }
 
 # Routes and integrations
