@@ -75,6 +75,16 @@ output "apigatewayv2_domain_name_hosted_zone_id" {
   value       = try(aws_apigatewayv2_domain_name.this[0].domain_name_configuration[0].hosted_zone_id, "")
 }
 
+output "apigatewayv2_dns_resords" {
+  description = "The target dns records"
+  value = {
+    for idx, stage in aws_apigatewayv2_stage.default : "dns_record${idx}" => {
+      domain_name = try(aws_apigatewayv2_domain_name.this[idx].domain_name_configuration[idx].target_domain_name, "")
+      hosted_zone = try(aws_apigatewayv2_domain_name.this[idx].domain_name_configuration[idx].hosted_zone_id, "")
+    }
+  }
+}
+
 # route
 # output "apigatewayv2_route_id" {
 #  description = "The default route identifier."
@@ -97,11 +107,12 @@ output "apigatewayv2_authorizer_id" {
   value       = { for k, v in aws_apigatewayv2_authorizer.this : k => v.id }
 }
 
+
 output "api_gateway_mappings" {
   value = {
-    for idx, stage in aws_apigatewayv2_stage.default : "stage${idx}" => {
+    for idx, stage in aws_apigatewayv2_stage.default : idx => {
       stage_id = aws_apigatewayv2_stage.default[idx].id
-      domain_name = try(aws_apigatewayv2_domain_name.this[idx].api_mapping_selection_expression, "")
+      domain_name = try(aws_apigatewayv2_domain_name.this[stage.id].api_mapping_selection_expression, "")
       api_id      = aws_apigatewayv2_api.this[idx].id
     }
   }

@@ -167,21 +167,27 @@ variable "default_stage_tags" {
 
 ####
 # domain name
-variable "domains" {
-  description = "List of domain config"
-  type = list(object({
-    domain_name = string
-    domain_name_certificate_arn = string
-  }))
-}
 
-variable "domain_name" {
+
+variable "portal_domain_name" {
   description = "The domain name to use for API gateway"
   type        = string
   default     = null
 }
 
-variable "domain_name_certificate_arn" {
+variable "product_domain_name" {
+  description = "The domain name to use for API gateway"
+  type        = string
+  default     = null
+}
+
+variable "portal_domain_name_certificate_arn" {
+  description = "The ARN of an AWS-managed certificate that will be used by the endpoint for the domain name"
+  type        = string
+  default     = null
+}
+
+variable "product_domain_name_certificate_arn" {
   description = "The ARN of an AWS-managed certificate that will be used by the endpoint for the domain name"
   type        = string
   default     = null
