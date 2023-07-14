@@ -75,12 +75,6 @@ output "apigatewayv2_domain_name_hosted_zone_id" {
   value       = try(aws_apigatewayv2_domain_name.this[0].domain_name_configuration[0].hosted_zone_id, "")
 }
 
-# api mapping
-output "apigatewayv2_api_mapping_id" {
-  description = "The API mapping identifier."
-  value       = try(aws_apigatewayv2_api_mapping.this[0].id, "")
-}
-
 # route
 # output "apigatewayv2_route_id" {
 #  description = "The default route identifier."
