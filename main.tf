@@ -208,13 +208,6 @@ resource "aws_apigatewayv2_authorizer" "this" {
   }
 }
 
-resource "aws_apigatewayv2_api_mapping" "api_gateway_mapping" {
-  for_each     = aws_apigatewayv2_stage.default
-  api_id       = aws_apigatewayv2_api.this[each.key].id
-  domain_name  = aws_apigatewayv2_domain_name.this[each.key].domain_name
-  stage        = each.value.id
-}
-
 # VPC Link (Private API)
 resource "aws_apigatewayv2_vpc_link" "this" {
   for_each = var.create && var.create_vpc_link ? var.vpc_links : {}

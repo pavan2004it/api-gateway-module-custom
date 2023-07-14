@@ -97,14 +97,12 @@ output "apigatewayv2_authorizer_id" {
   value       = { for k, v in aws_apigatewayv2_authorizer.this : k => v.id }
 }
 
-output "api_gateway_stage_ids" {
-  value = [for stage in aws_apigatewayv2_stage.default : stage.id]
-}
-
-output "domain_names" {
-  value = [for domain_name in aws_apigatewayv2_domain_name.this: domain_name.domain_name]
-}
-
-output "api_ids" {
-  value = [for api_id in aws_apigatewayv2_api.this: api_id.id]
+output "api_gateway_mappings" {
+  value = {
+    for idx, stage in aws_apigatewayv2_stage.default : "stage${idx}" => {
+      stage_id = aws_apigatewayv2_stage.default[idx].id
+      domain_name = try(aws_apigatewayv2_domain_name.this[idx].api_mapping_selection_expression, "")
+      api_id      = aws_apigatewayv2_api.this[idx].id
+    }
+  }
 }
