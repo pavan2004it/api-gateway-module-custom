@@ -20,6 +20,11 @@ resource "aws_apigatewayv2_api" "this" {
   tags = var.tags
 }
 
+locals {
+  product_api = [for api in aws_apigatewayv2_api.this : api.id if api.name == "RinggitPay.Products.API"]
+  portal_api = [for api in aws_apigatewayv2_api.this : api.id if api.name == "RinggitPay.Portal.API"]
+}
+
 
 # Domain name
 
@@ -62,7 +67,7 @@ resource "aws_apigatewayv2_domain_name" "portal-domain" {
 resource "aws_apigatewayv2_stage" "product-stage" {
 
 
-  api_id      = aws_apigatewayv2_api.this[0].id
+  api_id      = local.product_api[0]
   name        = var.stage_name
   auto_deploy = true
 
@@ -88,7 +93,7 @@ resource "aws_apigatewayv2_stage" "product-stage" {
 resource "aws_apigatewayv2_stage" "portal-stage" {
 
 
-  api_id      = aws_apigatewayv2_api.this[0].id
+  api_id      = local.portal_api[0]
   name        = var.stage_name
   auto_deploy = true
 
@@ -112,13 +117,13 @@ resource "aws_apigatewayv2_stage" "portal-stage" {
 
 
 resource "aws_apigatewayv2_api_mapping" "product_api_mapping" {
-  api_id      = aws_apigatewayv2_api.this[0]
+  api_id      = local.product_api[0]
   domain_name = aws_apigatewayv2_domain_name.product-domain.domain_name
   stage       = aws_apigatewayv2_stage.product-stage.id
 }
 
 resource "aws_apigatewayv2_api_mapping" "portal_api_mapping" {
-  api_id      = aws_apigatewayv2_api.this[1]
+  api_id      = local.portal_api[0]
   domain_name = aws_apigatewayv2_domain_name.portal-domain.domain_name
   stage       = aws_apigatewayv2_stage.portal-stage.id
 }
