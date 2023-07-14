@@ -122,11 +122,11 @@ locals {
 }
 
 locals {
-  api_gateway_ids   = [for api in aws_apigatewayv2_api.this : api.id]
+  gateway_ids   = [for api in aws_apigatewayv2_api.this : api.id]
   stage_ids    = aws_apigatewayv2_stage.default[index(var.domains, domain)].id
   domain_ids = {
     for domain in var.domains : domain.domain_name => {
-      api_id   = local.api_gateway_ids[index(var.names, domain.domain_name)]
+      api_id   = local.gateway_ids[index(var.names, domain.domain_name)]
       stage_id = local.stage_ids[index(var.names, domain.domain_name)]
     }
   }
