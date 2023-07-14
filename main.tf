@@ -116,13 +116,18 @@ resource "aws_apigatewayv2_stage" "default" {
   }
 }
 
+locals {
+  custom_domain_ids = [for domain in aws_apigatewayv2_domain_name.this : domain.id]
+  domain_ids = zipmap([for domain in var.domains : domain.domain_name],local.custom_domain_ids)
+}
+
 # Default API mapping
 resource "aws_apigatewayv2_api_mapping" "this" {
 #  count = var.create && var.create_api_domain_name && var.create_default_stage && var.create_default_stage_api_mapping ? 1 : 0
-  for_each = var.create && var.create_api_domain_name && var.create_default_stage && var.create_default_stage_api_mapping ? local.api_ids : {}
+  for_each = var.create && var.create_api_domain_name && var.create_default_stage && var.create_default_stage_api_mapping ? local.domain_ids : {}
 
   api_id      = each.value
-  domain_name = aws_apigatewayv2_domain_name.this[0].id
+  domain_name = each.value
   stage       = aws_apigatewayv2_stage.default[0].id
 }
 
