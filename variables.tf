@@ -53,10 +53,15 @@ variable "create_vpc_link" {
 }
 
 # API Gateway
-variable "name" {
+variable "names" {
   description = "The name of the API"
-  type        = string
-  default     = ""
+  type        = list(object({
+    name = string
+    body = string
+    description = string
+    protocol_type = string
+    api_version = string
+  }))
 }
 
 variable "description" {
@@ -162,6 +167,14 @@ variable "default_stage_tags" {
 
 ####
 # domain name
+variable "domains" {
+  description = "List of domain config"
+  type = list(object({
+    domain_name = string
+    domain_name_certificate_arn = string
+  }))
+}
+
 variable "domain_name" {
   description = "The domain name to use for API gateway"
   type        = string

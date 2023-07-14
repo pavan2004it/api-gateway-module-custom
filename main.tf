@@ -1,12 +1,11 @@
 # API Gateway
 resource "aws_apigatewayv2_api" "this" {
-  count = var.create && var.create_api_gateway ? 1 : 0
-
-  name          = var.name
-  description   = var.description
-  protocol_type = var.protocol_type
-  version       = var.api_version
-  body          = var.body
+  for_each = {for o in var.names : o.name => o if var.create && var.create_api_gateway}
+  name          = each.value.name
+  description   = each.value.description
+  protocol_type = each.value.protocol_type
+  version       = each.value.api_version
+  body          = each.value.body
 
   route_selection_expression   = var.route_selection_expression
   api_key_selection_expression = var.api_key_selection_expression
@@ -34,14 +33,20 @@ resource "aws_apigatewayv2_api" "this" {
   tags = var.tags
 }
 
+locals {
+  api_gateway_ids = [for api in aws_apigatewayv2_api.this : api.id]
+  api_ids = zipmap([for api in var.names : api.name],local.api_gateway_ids)
+}
+
 # Domain name
 resource "aws_apigatewayv2_domain_name" "this" {
-  count = var.create && var.create_api_domain_name ? 1 : 0
+#  count = var.create && var.create_api_domain_name ? 1 : 0
+  for_each = {for o in var.domains : o.domain_name => o if var.create && var.create_api_domain_name }
 
-  domain_name = var.domain_name
+  domain_name = each.value.domain_name
 
   domain_name_configuration {
-    certificate_arn                        = var.domain_name_certificate_arn
+    certificate_arn                        = each.value.domain_name_certificate_arn
     ownership_verification_certificate_arn = var.domain_name_ownership_verification_certificate_arn
     endpoint_type                          = "REGIONAL"
     security_policy                        = "TLS_1_2"
@@ -61,9 +66,9 @@ resource "aws_apigatewayv2_domain_name" "this" {
 
 # Default stage
 resource "aws_apigatewayv2_stage" "default" {
-  count = var.create && var.create_default_stage ? 1 : 0
+  for_each = var.create && var.create_default_stage ? local.api_ids : {}
 
-  api_id      = aws_apigatewayv2_api.this[0].id
+  api_id      = each.value
   name        = var.stage_name
   auto_deploy = true
 
@@ -113,9 +118,10 @@ resource "aws_apigatewayv2_stage" "default" {
 
 # Default API mapping
 resource "aws_apigatewayv2_api_mapping" "this" {
-  count = var.create && var.create_api_domain_name && var.create_default_stage && var.create_default_stage_api_mapping ? 1 : 0
+#  count = var.create && var.create_api_domain_name && var.create_default_stage && var.create_default_stage_api_mapping ? 1 : 0
+  for_each = var.create && var.create_api_domain_name && var.create_default_stage && var.create_default_stage_api_mapping ? local.api_ids : {}
 
-  api_id      = aws_apigatewayv2_api.this[0].id
+  api_id      = each.value
   domain_name = aws_apigatewayv2_domain_name.this[0].id
   stage       = aws_apigatewayv2_stage.default[0].id
 }
