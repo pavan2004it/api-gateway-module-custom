@@ -16,6 +16,23 @@ variable "create_default_stage" {
   default     = true
 }
 
+variable "create_default_stage_api_mapping" {
+  description = "Whether to create default stage API mapping"
+  type        = bool
+  default     = true
+}
+
+# variable "create_stage" {
+#   description = "Whether to create custom stage"
+#   type        = bool
+#   default     = false
+# }
+#
+# variable "create_stage_api_mapping" {
+#   description = "Whether to create stage API mapping"
+#   type        = bool
+#   default     = false
+# }
 
 variable "create_api_domain_name" {
   description = "Whether to create API domain name resource"
@@ -36,15 +53,10 @@ variable "create_vpc_link" {
 }
 
 # API Gateway
-variable "names" {
+variable "name" {
   description = "The name of the API"
-  type        = list(object({
-    name = string
-    body = string
-    description = string
-    protocol_type = string
-    api_version = string
-  }))
+  type        = string
+  default     = ""
 }
 
 variable "description" {
@@ -150,27 +162,13 @@ variable "default_stage_tags" {
 
 ####
 # domain name
-
-
-variable "portal_domain_name" {
+variable "domain_name" {
   description = "The domain name to use for API gateway"
   type        = string
   default     = null
 }
 
-variable "product_domain_name" {
-  description = "The domain name to use for API gateway"
-  type        = string
-  default     = null
-}
-
-variable "portal_domain_name_certificate_arn" {
-  description = "The ARN of an AWS-managed certificate that will be used by the endpoint for the domain name"
-  type        = string
-  default     = null
-}
-
-variable "product_domain_name_certificate_arn" {
+variable "domain_name_certificate_arn" {
   description = "The ARN of an AWS-managed certificate that will be used by the endpoint for the domain name"
   type        = string
   default     = null
